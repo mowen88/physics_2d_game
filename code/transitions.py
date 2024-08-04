@@ -9,7 +9,7 @@ class Fade:
 		self.surface = pygame.Surface(RES)
 		self.surface.fill(colour)
 		self.alpha = 255
-		self.fade_duration = 2000
+		self.fade_duration = 200
 		self.on_complete = None
 		self.transitioning = False
 		self.game.reset_keys()

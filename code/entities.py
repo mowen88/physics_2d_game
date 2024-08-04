@@ -39,22 +39,22 @@ class PhysicsEntity(pygame.sprite.Sprite):
         self.frame_index = 0
         self.image = self.animations['idle'][self.frame_index].convert_alpha()
         self.rect = self.image.get_rect(center=pos)
-        self.hitbox = self.rect.copy().inflate(-self.rect.width * 0.25, -self.rect.height * 0.25)
+        self.hitbox = self.rect.copy().inflate(-self.rect.width*0.25, -self.rect.height*0.25)
         
-        points = [
-            (self.hitbox.topleft[0] - self.hitbox.centerx, self.hitbox.topleft[1] - self.hitbox.centery),
-            (self.hitbox.topright[0] - self.hitbox.centerx, self.hitbox.topright[1] - self.hitbox.centery),
-            (self.hitbox.bottomright[0] - self.hitbox.centerx, self.hitbox.bottomright[1] - self.hitbox.centery),
-            (self.hitbox.bottomleft[0] - self.hitbox.centerx, self.hitbox.bottomleft[1] - self.hitbox.centery)
-        ]
+        half_width, half_height = round(size / 2), round(size / 2)
+        points = [(-half_width, -half_height), (-half_width, half_height), (half_width, half_height), (half_width, -half_height)]
+
         mass = 1.0
-        moment = pymunk.moment_for_poly(mass, points, (0, 0))
+        radius = 16
+        moment = pymunk.moment_for_circle(mass, 0, radius, (0, 0))
         body = pymunk.Body(mass, moment, body_type=pymunk.Body.DYNAMIC)
         body.position = (self.x, -self.y)
         self.body = body
-        shape = pymunk.Poly(body, points)
+        self.angle = self.body.angle
+        shape = pymunk.Circle(body, radius)
         shape.friction = 1
         space.add(body, shape)
+
 
     def import_images(self):
         path = f'../assets/characters/{self.name}/'
@@ -64,26 +64,28 @@ class PhysicsEntity(pygame.sprite.Sprite):
             self.animations[animation] = get_images(full_path)
 
     def animate(self, state, speed, loop=True):
-        self.frame_index += speed
-        if self.frame_index >= len(self.animations[state]):
-            if loop:
-                self.frame_index = 0
-            else:
-                self.frame_index = len(self.animations[state]) - 1
-        self.image = pygame.transform.flip(self.animations[state][int(self.frame_index)], 1, False)
-        self.rect = self.image.get_rect(center=(self.body.position.x, -self.body.position.y))
+	    self.frame_index += speed
+	    if self.frame_index >= len(self.animations[state]):
+	        if loop:
+	            self.frame_index = 0
+	        else:
+	            self.frame_index = len(self.animations[state]) - 1
+
+	    angle = math.degrees(self.body.angle)
+	    image = self.animations[state][int(self.frame_index)]
+	    rotated_image = pygame.transform.rotate(image, angle)
+	    
+	    # Update the image and rect
+	    self.image = rotated_image
+	    self.rect = self.image.get_rect(center=self.rect.center)
+	    self.hitbox = self.rect.copy().inflate(-self.rect.width * 0.25, -self.rect.height * 0.25)
+	    self.image = pygame.transform.scale_by(self.image, 2)
 
     def update(self, dt):
-        self.animate('idle', 6 *dt)
-        self.rect.center = (self.body.position.x, -self.body.position.y)
-        self.hitbox.center = self.rect.center
+	    self.animate('run', 6 * dt)
+	    self.rect.center = (self.body.position.x, -self.body.position.y)
+	    self.hitbox.center = self.rect.center
+	    self.angle = math.degrees(self.body.angle)
+	    print(self.angle)
 
-    def draw(self, screen):
-        x, y = self.body.position
-        y = -y
-        angle = math.degrees(self.body.angle)
-        rotated_image = pygame.transform.rotate(self.image, angle)
-        rotated_image_size = rotated_image.get_size()
-        x = x - int(rotated_image_size[0] / 2)
-        y = y - int(rotated_image_size[1] / 2)
-        screen.blit(rotated_image, [x, y])
+
