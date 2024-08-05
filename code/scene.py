@@ -1,8 +1,7 @@
 import pygame
-import pymunk
 from state import State
 from settings import *
-from entities import Entity, PhysicsEntity, PhysicsLine
+from entities import Entity, AnimatedEntity
 from player import Player
 from transitions import Fade, CirclesTransition
 
@@ -13,37 +12,28 @@ class Scene(State):
         self.bg_colour = COLOURS['green']
         self.transition = CirclesTransition(self.game)
 
-        self.space = pymunk.Space()
-        self.space.gravity = (0.0, -100.0)
-        self.space.sleep_time_threshold = 0.3
-
-        self.drawn_sprites = pygame.sprite.LayeredUpdates()
         self.update_sprites = pygame.sprite.Group()
+        self.drawn_sprites = pygame.sprite.Group()
 
-        self.ball = PhysicsEntity(self.space, [self.drawn_sprites, self.update_sprites], 'player', (40,40), 30, COLOURS['black'])
-        self.ball2 = PhysicsEntity(self.space, [self.drawn_sprites, self.update_sprites], 'player', (120,10), 30, COLOURS['black'])
-        self.floor = PhysicsLine(self.space, (100,200),(200,200))
-        self.floor2 = PhysicsLine(self.space, (10,100),(100,200))
-        self.floor3 = PhysicsLine(self.space, (200,200),(400,100))
-
+        self.player = AnimatedEntity([self.update_sprites, self.drawn_sprites], (HALF_WIDTH, HALF_HEIGHT), 'characters/player', 'player')
+  
     def next_scene(self):
         self.exit_state()
+
+    def create_scene(self):
+        pass
 
     def update(self, dt):
         if ACTIONS['Pause']:
             self.transition.on_complete = [self.next_scene]
 
         self.update_sprites.update(dt)
-
         self.transition.update(dt)
-        self.space.step(1/FPS)
 
     def draw(self, screen):
         screen.fill(self.bg_colour)
         self.drawn_sprites.draw(screen)
-        self.floor.draw(screen)
-        self.floor2.draw(screen)
-        self.floor3.draw(screen)
+        pygame.draw.rect(screen, COLOURS['white'], self.player.hitbox, 2)
 
         self.game.render_text('Made with', COLOURS['green'], self.game.font, (WIDTH * 0.5, HEIGHT * 0.2))
         self.transition.draw(screen)

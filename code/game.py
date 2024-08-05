@@ -1,6 +1,7 @@
 import pygame, sys, os, time, json, cProfile
 from pygame import mixer
 from os import walk
+from joysticks import JoystickEvents
 from menu import PygameLogo
 from settings import *
 
@@ -16,6 +17,9 @@ class Game:
         self.big_font = pygame.font.Font(FONT, 10)
         self.block_input = False
         self.running = True
+
+        #controller support
+        self.joysticks = JoystickEvents(self)
         
         # states
         self.stack = []
@@ -89,6 +93,8 @@ class Game:
         self.get_events()
         self.update(dt)
         self.draw(self.screen)
+
+        print(len(self.joysticks.joysticks))
         
 if __name__ == "__main__":
     game = Game()
