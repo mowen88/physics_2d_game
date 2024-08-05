@@ -9,7 +9,7 @@ class Fade:
 		self.surface = pygame.Surface(RES)
 		self.surface.fill(colour)
 		self.alpha = 255
-		self.fade_duration = 200
+		self.fade_speed = 500
 		self.on_complete = None
 		self.transitioning = False
 		self.game.reset_keys()
@@ -20,14 +20,14 @@ class Fade:
 		self.transitioning = True if self.on_complete is not None else False
 
 		if self.transitioning:
-			self.alpha += self.fade_duration * dt
+			self.alpha += self.fade_speed * dt
 			if self.alpha >= 255: 
 				self.alpha = 255
 				[func() for func in self.on_complete]	
 				self.on_complete = None
 				self.transitioning = False
 		else:
-			self.alpha -= self.fade_duration * dt
+			self.alpha -= self.fade_speed * dt
 			if self.alpha <= 0: 
 				self.alpha = 0
 		

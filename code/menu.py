@@ -10,7 +10,7 @@ class PygameLogo(State):
 		State.__init__(self, game)
 
 		self.timer = 0
-		self.duration = 1
+		self.duration = 1.5
 		self.transition = Fade(self.game)
 		Entity([self.drawn_sprites], (WIDTH * 0.5, HEIGHT * 0.6), pygame.image.load('../assets/pygame_logo.png').convert_alpha(), 'background')
 
