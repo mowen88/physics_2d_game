@@ -51,7 +51,7 @@ class Game:
 
     def reset_keys(self):
         for action in ACTIONS:
-            ACTIONS[action] = False
+            ACTIONS[action] = 0
 
     def get_csv_layer(self, path):
         grid = []
@@ -77,7 +77,7 @@ class Game:
         return animations
 
     def render_text(self, text, colour, font, pos, topleft=False):
-        surf = font.render (str(text), False, colour)
+        surf = font.render(str(text), False, colour)
         rect = surf.get_rect(topleft = pos) if topleft else surf.get_rect(center = pos)
         self.screen.blit(surf, rect)
 
@@ -90,11 +90,10 @@ class Game:
 
     def main_loop(self):
         dt = self.clock.tick(FPS)/1000
+        self.joysticks.get_events()
         self.get_events()
         self.update(dt)
         self.draw(self.screen)
-
-        print(len(self.joysticks.joysticks))
         
 if __name__ == "__main__":
     game = Game()

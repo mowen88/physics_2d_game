@@ -39,7 +39,19 @@ class Menu(State):
 
 		self.bg_colour = COLOURS['red']
 		self.transition = CirclesTransition(self.game)
-		Entity([self.drawn_sprites], (WIDTH * 0.5, HEIGHT * 0.6), pygame.image.load('../assets/pygame_logo.png').convert_alpha(), 'background')
+		self.selection = None
+		self.line_spacing = TILESIZE * 2
+		self.options_list = ['Start Game', 'Audio', 'Controls', 'Quit']
+		self.menu_objects = self.get_options()
+		
+	def get_options(self):
+		offset = 0
+		start_height = HEIGHT * 0.4
+		for option in self.options_list:
+			offset += self.line_spacing
+			image = self.game.font.render(option, False, COLOURS['white'])
+			pos = (WIDTH * 0.5, start_height + offset)
+			menu_object = Entity([self.drawn_sprites], pos, image, 'player')
 
 	def next_scene(self):
 		Scene(self.game).enter_state()
@@ -53,7 +65,9 @@ class Menu(State):
 
 	def draw(self, screen):
 		screen.fill(self.bg_colour)
-		self.game.render_text('First Menu !', COLOURS['white'], self.game.font, (WIDTH * 0.5, HEIGHT * 0.5))
+		self.drawn_sprites.draw(screen)
+		self.game.render_text('First Menu !', COLOURS['white'], self.game.font, (WIDTH * 0.5, HEIGHT * 0.2))
+
 		self.transition.draw(screen)
 
 		self.debug([str('FPS: '+ str(round(self.game.clock.get_fps(), 2))),

@@ -24,7 +24,7 @@ class Scene(State):
         pass
 
     def update(self, dt):
-        if ACTIONS['Pause']:
+        if ACTIONS['Pause'] >= 0.2:
             self.transition.on_complete = [self.next_scene]
 
         self.update_sprites.update(dt)
@@ -39,5 +39,7 @@ class Scene(State):
         self.transition.draw(screen)
 
         self.debug([str('FPS: '+ str(round(self.game.clock.get_fps(), 2))),
-                    str(len(self.game.stack)),
+                    str('Stack: ' + str(len(self.game.stack))),
+                    str('RS Up: ' + str(CONTROLLERS['Nintendo Switch Pro Controller']['L Trigger'])),
+                    str('RS Down: ' + str(CONTROLLERS['Nintendo Switch Pro Controller']['R Trigger'])),
                     None])
