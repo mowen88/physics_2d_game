@@ -1,7 +1,7 @@
 import pygame, sys, os, time, json, cProfile
 from pygame import mixer
 from os import walk
-from joysticks import JoystickEvents
+from event_handler import EventHandler
 from menu import PygameLogo
 from settings import *
 
@@ -17,9 +17,7 @@ class Game:
         self.big_font = pygame.font.Font(FONT, 10)
         self.block_input = False
         self.running = True
-
-        #controller support
-        self.joysticks = JoystickEvents(self)
+        self.events = EventHandler(self)
         
         # states
         self.stack = []
@@ -27,22 +25,8 @@ class Game:
         self.stack.append(self.pygame_logo)
 
     def get_events(self):
-        for event in pygame.event.get(): 
-            if event.type == pygame.QUIT:
-                self.quit()
- 
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE:
-                    self.quit()
-                if not self.block_input:
-                    for action, value in KEY_MAP.items():
-                        if value == event.key:
-                            ACTIONS[action] = True
-
-            if event.type == pygame.KEYUP:
-                for action, value in KEY_MAP.items():
-                    if value == event.key:
-                        ACTIONS[action] = False
+        self.events.key_events()
+        self.events.joystick_events()
 
     def quit(self):
         self.running = False
@@ -90,7 +74,6 @@ class Game:
 
     def main_loop(self):
         dt = self.clock.tick(FPS)/1000
-        self.joysticks.get_events()
         self.get_events()
         self.update(dt)
         self.draw(self.screen)

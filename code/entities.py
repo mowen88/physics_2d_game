@@ -17,7 +17,7 @@ class AnimatedEntity(pygame.sprite.Sprite):
         self.import_images(path)
         self.frame_index = 0
         self.rect = self.image.get_rect(center=pos)
-        self.hitbox = self.rect.copy().inflate(-self.rect.width*0.25, -self.rect.height*0.25)
+        self.hitbox = self.rect.copy().inflate(0,0)
 
     def import_images(self, path):
         path = f'../assets/{path}/'

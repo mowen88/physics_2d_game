@@ -1,34 +1,37 @@
-import pygame, pymunk, math
+import pygame
+from pygame.math import Vector2 as vec
 from support import *
 from settings import *
+from npc import NPC
 
-class Player(pygame.sprite.Sprite):
-	def __init__(self, groups, pos, surf=pygame.Surface((TILESIZE, TILESIZE)), z= 'background'):
-		super().__init__(groups)
+class Player(NPC):
+    def __init__(self, groups, pos, path, z='background'):
+        super().__init__(groups, pos, path)
 
-		self.name = 'player'
-		self.import_images()
-		self.frame_index = 0
-		self.image = self.animations['idle'][self.frame_index].convert_alpha()
-		self.rect = self.image.get_frect(center=pos)
-		self.hitbox = self.rect.inflate(-self.rect.width/2, -self.rect.height/2)
-		self.z = z
+        self.import_images(path)
+        self.rect = self.image.get_rect(center=pos)
+        self.hitbox = self.rect.copy().inflate(-self.rect.width*0.25, -self.rect.height*0.25)
 
-	def import_images(self):
-		path = f'../assets/characters/{self.name}/'
+        self.direction = vec() 
+        self.speed = 250
 
-		self.animations = get_animations(path)
+    def input(self):
+        if CONTROLLERS['PS4 Controller']['LS Right']: 
+            self.direction.x = CONTROLLERS['PS4 Controller']['LS Right']
+        elif CONTROLLERS['PS4 Controller']['LS Left']:
+            self.direction.x = -CONTROLLERS['PS4 Controller']['LS Left']
+        else:
+            self.direction.x = 0
 
-		for animation in self.animations.keys():
-			full_path = path + animation
-			self.animations[animation] = get_images(full_path)
+        if CONTROLLERS['PS4 Controller']['LS Down']: 
+            self.direction.y = CONTROLLERS['PS4 Controller']['LS Down']
+        elif CONTROLLERS['PS4 Controller']['LS Up']:
+            self.direction.y = -CONTROLLERS['PS4 Controller']['LS Up']
+        else:
+            self.direction.y = 0
 
-	def animate(self, state, loop=True):
-
-		self.frame_index += 0.2
-		if self.frame_index >= len(self.animations[state]):
-			if loop: 
-				self.frame_index = 0
-			else:
-				self.frame_index = len(self.animations[state]) -1			
-		self.image = pygame.transform.flip(self.animations[state][int(self.frame_index)], self.facing, False)
+    def update(self, dt):
+        self.animate('idle', 6 * dt)
+        self.input()
+        self.movement(dt)
+        
