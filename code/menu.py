@@ -1,7 +1,7 @@
 
 from state import State
 from settings import *
-from entities import Entity
+from entities import Entity, AnimatedEntity
 from transitions import Fade, CirclesTransition
 from scene import Scene
 
@@ -43,15 +43,27 @@ class Menu(State):
 		self.line_spacing = TILESIZE * 2
 		self.options_list = ['Start Game', 'Audio', 'Controls', 'Quit']
 		self.menu_objects = self.get_options()
-		
+
+		self.index = 0
+		self.cursor = AnimatedEntity([self.update_sprites, self.drawn_sprites], self.menu_objects[self.index].rect.midleft, '../assets/particles/menu_cursor_left', 'player')
+
+	def navigate(self):
+		if ACTIONS['Down']:
+			self.index = (self.index + 1) % len(self.menu_objects)
+			print(self.index)
+			ACTIONS['Down'] = False
+
 	def get_options(self):
+		obj_list = []
 		offset = 0
 		start_height = HEIGHT * 0.4
 		for option in self.options_list:
 			offset += self.line_spacing
 			image = self.game.font.render(option, False, COLOURS['white'])
 			pos = (WIDTH * 0.5, start_height + offset)
-			menu_object = Entity([self.drawn_sprites], pos, image, 'player')
+			menu_obj = Entity([self.drawn_sprites], pos, image, 'player')
+			obj_list.append(menu_obj)
+		return obj_list
 
 	def next_scene(self):
 		Scene(self.game).enter_state()
@@ -59,6 +71,8 @@ class Menu(State):
 	def update(self, dt):
 		if ACTIONS['Pause']:
 			self.transition.on_complete = [self.next_scene]
+
+		self.navigate()
 
 		self.update_sprites.update(dt)
 		self.transition.update(dt)
