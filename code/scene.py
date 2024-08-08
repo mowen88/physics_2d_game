@@ -2,7 +2,7 @@ import pygame
 from state import State
 from settings import *
 from entities import Entity, AnimatedEntity
-from player import Player
+from characters.player import Player
 from transitions import Fade, CirclesTransition
 
 class Scene(State):
@@ -31,8 +31,8 @@ class Scene(State):
     	self.update_sprites.update(dt)
     	self.transition.update(dt)
 
-    def show_buttons(self):
-        return CONTROLLERS['Nintendo Switch Pro Controller']['A'], CONTROLLERS['Nintendo Switch Pro Controller']['B']
+    def show_buttons(self, controller):
+        return list(CONTROLLERS[controller].values())
 
     def draw(self, screen):
 
@@ -45,5 +45,5 @@ class Scene(State):
 
         self.debug([str('FPS: '+ str(round(self.game.clock.get_fps(), 2))),
                     str('Stack: ' + str(len(self.game.stack))),
-                    str(self.show_buttons()),
+                    str(self.show_buttons('Nintendo Switch Pro Controller')),
                     None])

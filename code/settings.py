@@ -24,7 +24,7 @@ COLOURS = {'black':(0,0,0), 'white':(255,255,255),'red':(255,0,0), 'green':(0,25
 DEFAULT_KEY_MAP = {'Left':pygame.K_LEFT, 'Right':pygame.K_RIGHT, 'Up':pygame.K_UP, 'Down':pygame.K_DOWN,
 			'Attack':pygame.K_x, 'Dash':pygame.K_c,'Inventory':pygame.K_i, 'Pause':pygame.K_SPACE}
 
-DEADZONE = 0.1
+DEADZONE = 0.2
 TRIGGER_TO_BUTTON_DEADZONE = 0.3
 CONTROLLERS = {
 			'Nintendo Switch Pro Controller':

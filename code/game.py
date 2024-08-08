@@ -2,7 +2,7 @@ import pygame, sys, os, time, json, cProfile
 from pygame import mixer
 from os import walk
 from event_handler import EventHandler
-from menu import PygameLogo
+from menus.menu import PygameLogo
 from settings import *
 
 class Game:
@@ -26,7 +26,9 @@ class Game:
 
     def get_events(self):
         self.events.key_events()
-        self.events.joystick_events()
+        self.events.keys_pressed()
+        #self.events.joystick_events()
+        self.events.joystick_pressed()
 
     def quit(self):
         self.running = False

@@ -41,7 +41,8 @@ class Menu(State):
 		self.transition = CirclesTransition(self.game)
 		self.selection = None
 		self.line_spacing = TILESIZE * 2
-		self.options_list = ['Start Game', 'Audio', 'Controls', 'Quit']
+		self.max_items_per_column = 5
+		self.options_list = ['Start Game', 'Audio', 'Controls', 'Quit', 'Opt 5', 'Option 6', 'Option 7777777']
 		self.menu_objects = self.get_options()
 
 		self.index = 0
@@ -53,17 +54,43 @@ class Menu(State):
 			print(self.index)
 			ACTIONS['Down'] = False
 
-	def get_options(self):
-		obj_list = []
-		offset = 0
-		start_height = HEIGHT * 0.4
-		for option in self.options_list:
-			offset += self.line_spacing
-			image = self.game.font.render(option, False, COLOURS['white'])
-			pos = (WIDTH * 0.5, start_height + offset)
-			menu_obj = Entity([self.drawn_sprites], pos, image, 'player')
-			obj_list.append(menu_obj)
-		return obj_list
+		elif ACTIONS['Up']:
+			self.index = (self.index - 1) % len(self.menu_objects)
+			print(self.index)
+			ACTIONS['Up'] = False
+
+		if ACTIONS['Left'] or ACTIONS['Right']:
+			if self.index < self.max_items_per_column:
+				self.index = min(self.index + self.max_items_per_column, len(self.options_list)-1)
+			else:
+				self.index -= self.max_items_per_column
+			ACTIONS['Right'] = False
+			ACTIONS['Left'] = False
+
+		self.cursor.rect.midright = self.menu_objects[self.index].rect.midleft
+
+	def get_options(self, centred=False):
+	    obj_list = []
+	    offset = 0
+	    start_x = WIDTH * 0.2
+	    start_height = HEIGHT * 0.4
+
+	    for index, option in enumerate(self.options_list):
+	        if index % self.max_items_per_column == 0 and index != 0:
+	            start_x += WIDTH * 0.3
+	            offset = 0
+
+	        offset += self.line_spacing
+	        image = self.game.font.render(option, False, COLOURS['white'])
+	        adjusted_start_x = start_x
+	        if centred:
+	        	adjusted_start_x = start_x + image.get_size()[0]
+	        pos = (adjusted_start_x, start_height + offset)
+	        menu_obj = Entity([self.drawn_sprites], pos, image, 'player', 'topleft')
+	        obj_list.append(menu_obj)
+
+	    return obj_list
+
 
 	def next_scene(self):
 		Scene(self.game).enter_state()
